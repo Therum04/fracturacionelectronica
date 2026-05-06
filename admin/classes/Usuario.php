@@ -29,7 +29,7 @@ class Usuario
 				"ssssi",
 				$nombres,
 				$apellidos,
-				$email,
+				$usuario,
 				$hash,
 				$enum_rol
 			);
@@ -43,7 +43,7 @@ class Usuario
 
 			$q = $this->con->query("UPDATE usuarios
 			 SET nombres= '$nombres',
-			 apellidos= '$apellidos',
+			 apellidos= '$apellidos'
 			 WHERE idusuarios = '$idusuarios'");
 			if ($q) {
 				return ['status' => 202, 'message' => 'Registro modificado correctamente'];
@@ -57,11 +57,8 @@ class Usuario
 	public function deleteRegistro($cid = null)
 	{
 		if ($cid != null) {
-			$q = $this->con->query("SELECT * FROM pedido WHERE idusuario = '$cid' LIMIT 1");
-			if ($q->num_rows > 0) {
-				return ['status' => 303, 'message' => 'No se puede eliminar el registro existe una relación con pedidos'];
-			}
-			$q = $this->con->query("DELETE FROM usuario WHERE idusuario = '$cid'")  or die($this->con->error);
+			
+			$q = $this->con->query("DELETE FROM usuarios WHERE idusuarios = '$cid'")  or die($this->con->error);
 			if ($q) {
 				return ['status' => 202, 'message' => 'El registro se elimino correctamente'];
 			} else {

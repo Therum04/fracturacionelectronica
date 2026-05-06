@@ -88,13 +88,12 @@ $(document).ready(function () {
 	});
 	$(document.body).on("click", ".edit-registro", function () {
 		var usuario = $.parseJSON($.trim($(this).children("span").html()));
-		$("#idusuario").val(usuario.idusuario);
+		$("#idusuarios").val(usuario.idusuarios);
 		$("#nombres").val(usuario.nombres);
 		$("#apellidos").val(usuario.apellidos);
-		$("#email").val(usuario.email);
+		$("#usuario").val(usuario.usuario);
 		$("#clave").val('********');
-		$("#idrol").val(usuario.idrol);
-		$("#lugar_entraga").val(usuario.lugar_entraga);
+		$("#enum_rol").val(usuario.enum_rol);
 		document.getElementById('usuarioModal').classList.remove('hidden');
 	});
 
