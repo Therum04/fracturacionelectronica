@@ -13,41 +13,38 @@ class Usuario
 		$this->con = $db->connect();
 	}
 
-	public function addRegistro($idusuario, $nombres, $apellidos, $email, $clave, $idrol, $lugar_entraga)
+	public function addRegistro($idusuarios, $nombres, $apellidos, $usuario, $clave, $enum_rol)
 	{
 
-		if ($idusuario == 0) {
-			$q = $this->con->query("SELECT * FROM usuario WHERE email = '$email' LIMIT 1");
+		if ($idusuarios == 0) {
+			$q = $this->con->query("SELECT * FROM usuarios WHERE usuario = '$usuario' LIMIT 1");
 			if ($q->num_rows > 0) {
 				return ['status' => 303, 'message' => 'ya existe un registro'];
 			}
 			$hash = password_hash($clave, PASSWORD_DEFAULT);
-			$stmt =  $this->con->prepare("INSERT INTO usuario 
-            (nombres, apellidos, email, clave, idrol, lugar_entraga, estado)
-            VALUES (?, ?, ?, ?, ?, ?, 1)");
+			$stmt =  $this->con->prepare("INSERT INTO usuarios 
+            (nombres, apellidos, usuario, clave, enum_rol, estado)
+            VALUES (?, ?, ?, ?, ?, 1)");
 			$stmt->bind_param(
-				"ssssis",
+				"ssssi",
 				$nombres,
 				$apellidos,
 				$email,
 				$hash,
-				$idrol,
-				$lugar_entraga
+				$enum_rol
 			);
 			if ($stmt->execute()) {
 
-				return ['status' => 202, 'message' => 'Cuenta creada correctamente. A'];
+				return ['status' => 202, 'message' => 'Cuenta creada correctamente.'];
 			} else {
 				return ['status' => 303, 'message' => 'Error al registrar usuario'];
 			}
 		} else {
 
-			$q = $this->con->query("UPDATE usuario
+			$q = $this->con->query("UPDATE usuarios
 			 SET nombres= '$nombres',
 			 apellidos= '$apellidos',
-			 email= '$email',
-			 lugar_entraga= '$lugar_entraga'
-			 WHERE idusuario = '$idusuario'");
+			 WHERE idusuarios = '$idusuarios'");
 			if ($q) {
 				return ['status' => 202, 'message' => 'Registro modificado correctamente'];
 			} else {
@@ -78,7 +75,7 @@ class Usuario
 	public function getRoles()
 	{
 		$roles = [];
-		$q = $this->con->query("SELECT r.idrol, r.descripcion FROM rol r ");
+		$q = $this->con->query("SELECT valor, nombre FROM enumerados where tipo=1 ");
 		if ($q->num_rows > 0) {
 			while ($row = $q->fetch_assoc()) {
 				$roles[] = $row;
@@ -109,15 +106,15 @@ class Usuario
 }
 
 if (isset($_POST['add_update'])) {
-	$idusuario = $_POST['idusuario'];
+	$idusuarios = $_POST['idusuarios'];
 	$nombres = $_POST['nombres'];
 	$apellidos = $_POST['apellidos'];
-	$email = $_POST['email'];
+	$usuario = $_POST['usuario'];
 	$clave = $_POST['clave'];
-	$idrol = $_POST['idrol'];
-	$lugar_entraga = $_POST['lugar_entraga'];
+	$enum_rol = $_POST['enum_rol'];
+
 	$p = new Usuario();
-	echo json_encode($p->addRegistro($idusuario, $nombres, $apellidos, $email, $clave, $idrol, $lugar_entraga));
+	echo json_encode($p->addRegistro($idusuarios, $nombres, $apellidos, $usuario, $clave, $enum_rol));
 }
 
 

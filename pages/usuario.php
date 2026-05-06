@@ -87,7 +87,7 @@
         <!-- Body -->
         <div class="p-6">
             <form id="form_usuario" class="grid grid-cols-1 gap-4">
-                <input type="hidden" name="idusuario" id="idusuario">
+                <input type="hidden" name="idusuarios" id="idusuarios">
                 <input type="hidden" name="add_update" id="add_update" value="1">
 
                 <!-- Categoría -->
@@ -118,13 +118,13 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">
-                        Email <span class="text-red-500">*</span>
+                        Usuario <span class="text-red-500">*</span>
                     </label>
-                    <input type="email"
-                        name="email"
-                        id="email"
+                    <input type="text"
+                        name="usuario"
+                        id="usuario"
                         required
-                        placeholder="Email..."
+                        placeholder="Usuario..."
                         class="mt-1 w-full border border-gray-300 rounded px-3 py-2 text-gray-900
                                focus:outline-none focus:ring focus:border-blue-400 bg-white">
                 </div>
@@ -144,20 +144,12 @@
                     <label class="block text-sm font-medium text-gray-700">
                         Rol <span class="text-red-500">*</span>
                     </label>
-                    <select name="idrol" id="idrol"
+                    <select name="enum_rol" id="enum_rol"
                         class="mt-1 w-full border border-gray-300 rounded px-3 py-2 text-gray-900
                                focus:outline-none focus:ring focus:border-blue-400 bg-white tipoRoles_list">
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                        Lugar de entrega <span class="text-red-500">*</span>
-                    </label>
-                    <textarea name="lugar_entraga" id="lugar_entraga" rows="3"
-                        placeholder="Lugar de entrega..."
-                        class="mt-1 w-full border border-gray-300 rounded px-3 py-2 text-gray-900
-                               focus:outline-none focus:ring focus:border-blue-400 bg-white"></textarea>
-                </div>
+               
             </form>
         </div>
 

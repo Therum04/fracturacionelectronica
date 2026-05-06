@@ -25,7 +25,7 @@ function cerrarCambiarClave() {
 }
 
 function abrirUsuario() {
-	$("input[name='idusuario']").val(0);
+	$("input[name='idusuarios']").val(0);
 	document.getElementById('usuarioModal').classList.remove('hidden');
 }
 function cerrarUsuario() {
@@ -52,7 +52,7 @@ $(document).ready(function () {
 
 					var catSelectHTML = '<option value="">Seleccione</option>';
 					$.each(resp.message.roles, function (index, value) {
-						catSelectHTML += '<option value="' + value.idrol + '">' + value.descripcion + '</option>';
+						catSelectHTML += '<option value="' + value.valor + '">' + value.nombre + '</option>';
 					});
 					$(".tipoRoles_list").html(catSelectHTML);
 

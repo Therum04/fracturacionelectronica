@@ -72,7 +72,7 @@ $(document).ready(function () {
             apellidos: {
                 required: true,
             },
-            email: {
+            usuario: {
                 required: true,
             },
             clave: {
@@ -92,18 +92,16 @@ $(document).ready(function () {
             apellidos: {
                 required: "Apellidos es obligatorio",
             },
-            email: {
+            usuario: {
                 required: "Email es obligatorio",
             },
             clave: {
                 required: "Clave es obligatorio",
             },
-            idrol: {
+            enum_rol: {
                 required: "Rol es obligatorio",
             },
-            lugar_entraga: {
-                required: "Lugar de entrega es obligatorio",
-            },
+            
         }
     });
 
