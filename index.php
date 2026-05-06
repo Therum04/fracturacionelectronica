@@ -6,22 +6,22 @@ session_start();
 if ($_POST) {
     $usuario = $_POST['usuario'];
     $contrasena = $_POST['contrasena'];
-    $result = mysqli_query($con, "SELECT idusuario,
+    $result = mysqli_query($con, "SELECT idusuarios,
         nombres,
         apellidos,
-        email,
+        usuario,
         clave,
-        idrol,
-        lugar_entraga,
+        enum_rol,
         estado
-    FROM usuario 
-    WHERE estado=1 and  email = '" . $usuario . "' ");
+    FROM usuarios 
+    WHERE estado=1 and  usuario = '" . $usuario . "' ");
     if ($row = mysqli_fetch_array($result)) {
 
         if (password_verify($contrasena, $row['clave'])) {
-            $_SESSION['idusuario'] = $row['idusuario'];
+            $_SESSION['idusuarios'] = $row['idusuarios'];
             $_SESSION['nombres'] = $row['nombres'];
-            $_SESSION['idrol'] = $row['idrol'];
+            $_SESSION['apellidos'] = $row['apellidos'];
+            $_SESSION['enum_rol'] = $row['enum_rol'];
             //$_SESSION['idempresa'] = $row['idempresa'];
             echo "<script language='javascript'>window.location='pages/presentacion.php'</script>;";
         } else {
