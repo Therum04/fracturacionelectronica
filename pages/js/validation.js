@@ -123,5 +123,35 @@ $(document).ready(function () {
             },
         }
     });
+    $('#form_producto').validate({
+        rules: {
+            descripcion: {
+                required: true,
+            },
+            id_unidad: {
+                required: true,
+            },
+            precio_unitario: {
+                required: true,
+            },
+            id_impuesto: {
+                required: true,
+            },
+        },
+        messages: {
+            descripcion: {
+                required: "Descripción obligatorio",
+            },
+            id_unidad: {
+                required: "Unidad Medida obligatorio",
+            },
+            precio_unitario: {
+                required: "Precio Unitario obligatorio",
+            },
+            id_impuesto: {
+                required: "Tipo impuesto obligatorio",
+            },
+        }
+    });
 
 });
