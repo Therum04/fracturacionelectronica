@@ -91,6 +91,12 @@ if (!empty($_SESSION['carrito'])) {
                         🏠 Inicio
                     </a>
                     <?php if ($logueado && $rol == 1): ?>
+                        <a href="empresa.php"
+                            class="flex items-center gap-3 p-3 rounded-lg
+                    <?= $pagina == 'empresa.php' ? $active : $normal ?>">
+                            <i class="fa fa-tags"></i> Empresa
+                        </a>
+
                         <a href="producto.php"
                             class="flex items-center gap-3 p-3 rounded-lg
                     <?= $pagina == 'producto.php' ? $active : $normal ?>">
