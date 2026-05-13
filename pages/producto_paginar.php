@@ -9,8 +9,10 @@ if ($action == 'ajax') {
 
   $query = mysqli_real_escape_string($con, trim((strip_tags($_REQUEST['query'], ENT_QUOTES))));
 
-  $tables = "producto_servicio u ";
-  $campos = " u.id_producto, u.codigo_producto, u.descripcion, u.id_unidad, u.precio_unitario, u.id_impuesto, u.codigo_afectacion_igv, u.activo";
+  $tables = "producto_servicio u 
+  left join unidad_medida um on u.id_unidad = um.id_unidad 
+  left join tipo_impuesto ti on u.id_impuesto = ti.id_impuesto";
+  $campos = " u.id_producto, u.codigo_producto, u.descripcion, u.id_unidad, u.precio_unitario, u.id_impuesto, u.codigo_afectacion_igv, u.activo, um.nombre as DescUnidad, ti.nombre as DescImpuesto ";
   $sWhere = "  (u.descripcion LIKE '%" . $query . "%')";
   $sWhere .= " ORDER BY u.id_producto desc";
   include 'pagination.php';
@@ -38,7 +40,9 @@ if ($action == 'ajax') {
             <th class="px-4 py-2 text-left font-semibold uppercase">N°</th>
             <th class="px-4 py-2 text-left font-semibold uppercase">Codigo Producto</th>
             <th class="px-4 py-2 text-left font-semibold uppercase">Descripción</th>
+            <th class="px-4 py-2 text-left font-semibold uppercase">Unida Media</th>
             <th class="px-4 py-2 text-left font-semibold uppercase">Precio Unitario</th>
+            <th class="px-4 py-2 text-left font-semibold uppercase">Impuesto</th>
             <th class="px-4 py-2 text-left font-semibold uppercase">Estado</th>
             <th class="px-4 py-2 text-center font-semibold uppercase">Acción</th>
           </tr>
@@ -55,13 +59,17 @@ if ($action == 'ajax') {
             $id_impuesto = $row['id_impuesto'];
             $codigo_afectacion_igv = $row['codigo_afectacion_igv'];
             $activo = $row['activo'];
+            $DescUnidad = $row['DescUnidad'];
+            $DescImpuesto = $row['DescImpuesto'];
             $finales++;
           ?>
             <tr>
               <td class="px-4 py-2"><?php echo $finales; ?></td>
               <td class="px-4 py-2"><?php echo $codigo_producto; ?></td>
               <td class="px-4 py-2"><?php echo $descripcion; ?></td>
+              <td class="px-4 py-2"><?php echo $DescUnidad; ?></td>
               <td class="px-4 py-2"><?php echo $precio_unitario; ?></td>
+              <td class="px-4 py-2"><?php echo $DescImpuesto; ?></td>
               <td class="px-4 py-2">
                 <?php if ($activo == 1) { ?>
                   <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm">● Activo</span>
