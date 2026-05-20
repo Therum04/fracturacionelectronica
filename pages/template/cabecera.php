@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
 <?php
+session_start();
 $pagina = basename($_SERVER['PHP_SELF']);
 $active = "bg-teal-50 border border-teal-200 text-teal-600 font-medium";
 $normal = "hover:bg-gray-100";
@@ -12,8 +11,6 @@ $nombre = $_SESSION['nombres'];
 $rol = $_SESSION['idrol'];
 $idusuario = $_SESSION['idusuario']; */
 
-session_start();
-
 $logueado = false;
 $nombre = null;
 $rol = null;
@@ -23,6 +20,7 @@ if (isset($_SESSION['idusuarios'])) {
     $logueado = true;
     $nombre = $_SESSION['nombres'];
     $rol = $_SESSION['enum_rol'];
+    $desRol = $_SESSION['rol'];
     $idusuario = $_SESSION['idusuarios'];
 }
 $cartCount = 0;
@@ -33,6 +31,8 @@ if (!empty($_SESSION['carrito'])) {
     }
 }
 ?>
+<!DOCTYPE html>
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -102,16 +102,8 @@ if (!empty($_SESSION['carrito'])) {
                     <?= $pagina == 'producto.php' ? $active : $normal ?>">
                             <i class="fa fa-tags"></i> Productos
                         </a>
-                        <a href="categoria.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
-                    <?= $pagina == 'categoria.php' ? $active : $normal ?>">
-                            📂 Categorías
-                        </a>
-                        <a href="baner.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
-                    <?= $pagina == 'baner.php' ? $active : $normal ?>">
-                            🖼 Banner
-                        </a>
+
+
                         <a href="perfil.php"
                             class="flex items-center gap-3 p-3 rounded-lg
                     <?= $pagina == 'perfil.php' ? $active : $normal ?>">
@@ -123,27 +115,8 @@ if (!empty($_SESSION['carrito'])) {
                             👤 Usuarios
                         </a>
                     <?php endif; ?>
-                    <?php if ($logueado && ($rol == 1 || $rol == 2 || $rol == 3)): ?>
-                        <a href="pedidos.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
-                    <?= $pagina == 'pedidos.php' ? $active : $normal ?>">
-                            <i class="fas fa-clipboard-list"></i> </i> Pedidos
-                        </a>
 
 
-
-                    <?php endif; ?>
-                    <a href="carrito.php"
-                        class="flex items-center gap-2 p-3 rounded-lg
-                   <?= $pagina == 'carrito.php' ? $active : $normal ?>">
-                        🛒 Carrito
-                        <span id="cartBadge"
-                            class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full
-                   <?= $cartCount > 0 ? '' : 'hidden' ?>">
-                            <?= $cartCount ?>
-                        </span>
-
-                    </a>
 
                 </nav>
             </div>

@@ -6,15 +6,17 @@ session_start();
 if ($_POST) {
     $usuario = $_POST['usuario'];
     $contrasena = $_POST['contrasena'];
-    $result = mysqli_query($con, "SELECT idusuarios,
-        nombres,
-        apellidos,
-        usuario,
-        clave,
-        enum_rol,
-        estado
-    FROM usuarios 
-    WHERE estado=1 and  usuario = '" . $usuario . "' ");
+    $result = mysqli_query($con, "SELECT u.idusuarios,
+        u.nombres,
+        u.apellidos,
+        u.usuario,
+        u.clave,
+        u.enum_rol,
+        e.nombre as desRol,
+        u.estado
+    FROM usuarios u
+    left join enumerados e on e.valor= u.enum_rol and e.tipo=1
+    WHERE u.estado=1 and  u.usuario = '" . $usuario . "' ");
     if ($row = mysqli_fetch_array($result)) {
 
         if (password_verify($contrasena, $row['clave'])) {
@@ -22,7 +24,7 @@ if ($_POST) {
             $_SESSION['nombres'] = $row['nombres'];
             $_SESSION['apellidos'] = $row['apellidos'];
             $_SESSION['enum_rol'] = $row['enum_rol'];
-            //$_SESSION['idempresa'] = $row['idempresa'];
+            $_SESSION['rol'] = $row['desRol'];
             echo "<script language='javascript'>window.location='pages/presentacion.php'</script>;";
         } else {
             $errormsg = "Contraseña incorrecta";
