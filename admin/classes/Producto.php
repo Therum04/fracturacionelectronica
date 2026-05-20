@@ -62,6 +62,22 @@ class Producto
 		}
 	}
 
+	public function getAllProductos()
+	{
+		$data = [];
+		$sql = "SELECT p.*, i.porcentaje as impuesto_porcentaje 
+                FROM producto_servicio p 
+                LEFT JOIN tipo_impuesto i ON p.id_impuesto = i.id_impuesto 
+                ";
+		$q = $this->con->query($sql);
+		if ($q && $q->num_rows > 0) {
+			while ($row = $q->fetch_assoc()) {
+				$data[] = $row;
+			}
+		}
+		return $data;
+	}
+
 
 	public function deleteRegistro($cid = null)
 	{

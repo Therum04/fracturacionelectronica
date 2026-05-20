@@ -104,15 +104,34 @@ if (!empty($_SESSION['carrito'])) {
                         </a>
 
 
-                        <a href="perfil.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
-                    <?= $pagina == 'perfil.php' ? $active : $normal ?>">
-                            👤 Perfil
-                        </a>
                         <a href="usuario.php"
                             class="flex items-center gap-3 p-3 rounded-lg
                     <?= $pagina == 'usuario.php' ? $active : $normal ?>">
                             👤 Usuarios
+                        </a>
+                        <a href="clientes.php"
+                            class="flex items-center gap-3 p-3 rounded-lg
+                    <?= $pagina == 'clientes.php' ? $active : $normal ?>">
+                            👤 Clientes
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if ($logueado): ?>
+                        <a href="ventas.php"
+                            class="flex items-center gap-3 p-3 rounded-lg
+                    <?= $pagina == 'ventas.php' ? $active : $normal ?>">
+                            <i class="fa fa-file-invoice"></i> Ventas
+                        </a>
+                        <a href="factura.php"
+                            class="flex items-center gap-3 p-3 rounded-lg
+                    <?= $pagina == 'factura.php' ? $active : $normal ?>">
+                            <i class="fa fa-plus-circle"></i> Nueva Factura
+                        </a>
+
+                        <a href="perfil.php"
+                            class="flex items-center gap-3 p-3 rounded-lg
+                    <?= $pagina == 'perfil.php' ? $active : $normal ?>">
+                            👤 Perfil
                         </a>
                     <?php endif; ?>
 

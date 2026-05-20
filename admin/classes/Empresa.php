@@ -61,11 +61,23 @@ class Empresa
 	}
 
 
+	public function getAllEmpresas()
+	{
+		$data = [];
+		$q = $this->con->query("SELECT id_empresa, ruc, nombre_razon_social, nombre_comercial FROM empresa WHERE activo = 1");
+		if ($q && $q->num_rows > 0) {
+			while ($row = $q->fetch_assoc()) {
+				$data[] = $row;
+			}
+		}
+		return $data;
+	}
+
 	public function deleteRegistro($cid = null)
 	{
 		if ($cid != null) {
 			
-			$q = $this->con->query("DELETE FROM producto_servicio WHERE id_producto = '$cid'")  or die($this->con->error);
+			$q = $this->con->query("DELETE FROM empresa WHERE id_empresa = '$cid'")  or die($this->con->error);
 			if ($q) {
 				return ['status' => 202, 'message' => 'El registro se elimino correctamente'];
 			} else {
@@ -93,7 +105,3 @@ if (isset($_POST['add_update'])) {
 	$p = new Empresa();
 	echo json_encode($p->addRegistro($id_empresa, $ruc, $nombre_razon_social,$nombre_comercial, $direccion_fiscal, $codigo_establecimiento, $codigo_punto_emision));
 }
-
-
-
-
