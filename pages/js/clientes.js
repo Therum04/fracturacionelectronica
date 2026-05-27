@@ -257,7 +257,7 @@ $(document).ready(function () {
 	
     $(document).on("click", ".edit-registro", function (e) {
         e.preventDefault();
-debugger
+
         const raw = $(this).attr("data-client") || $(this).children("span").html();
         const cliente = JSON.parse($.trim(raw));
 
