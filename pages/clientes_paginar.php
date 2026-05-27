@@ -6,10 +6,10 @@ $con = $db->connect();
 $action = (isset($_REQUEST['action']) && $_REQUEST['action'] != NULL) ? $_REQUEST['action'] : '';
 if ($action == 'ajax') {
     $query = mysqli_real_escape_string($con, trim((strip_tags($_REQUEST['query'], ENT_QUOTES))));
-    $tables = "cliente c left join tipo_documento_identidad td on c.id_tipo_doc = td.id_tipo_doc";
-    $campos = " c.*, td.nombre as DescTipoDoc ";
-    $sWhere = " (c.nombre_razon_social LIKE '%" . $query . "%' OR c.numero_doc LIKE '%" . $query . "%')";
-    $sWhere .= " ORDER BY c.id_cliente desc";
+    $tables = "clientes c";
+    $campos = " c.* ";
+    $sWhere = " (c.nombres LIKE '%" . $query . "%' OR c.apellido_paterno LIKE '%" . $query . "%' OR c.apellido_materno LIKE '%" . $query . "%' OR c.razon_social LIKE '%" . $query . "%' OR c.numero_documento LIKE '%" . $query . "%')";
+    $sWhere .= " ORDER BY c.id desc";
     
     include 'pagination.php';
     $page = (isset($_REQUEST['page']) && !empty($_REQUEST['page'])) ? $_REQUEST['page'] : 1;
@@ -46,17 +46,17 @@ if ($action == 'ajax') {
           ?>
             <tr>
               <td class="px-4 py-2"><?php echo $i++; ?></td>
-              <td class="px-4 py-2"><?php echo $row['DescTipoDoc']; ?></td>
-              <td class="px-4 py-2"><?php echo $row['numero_doc']; ?></td>
-              <td class="px-4 py-2"><?php echo $row['nombre_razon_social']; ?></td>
-              <td class="px-4 py-2"><?php echo $row['correo']; ?></td>
+              <td class="px-4 py-2"><?php echo $row['tipo_documento']; ?></td>
+              <td class="px-4 py-2"><?php echo $row['numero_documento']; ?></td>
+              <td class="px-4 py-2"><?php echo $row['razon_social'] ? $row['razon_social'] : $row['nombres'] . ' ' . $row['apellido_paterno'] . ' ' . $row['apellido_materno']; ?></td>
+              <td class="px-4 py-2"><?php echo $row['email']; ?></td>
               <td class="px-4 py-2"><?php echo $row['telefono']; ?></td>
               <td class="px-4 py-2 text-center flex justify-center gap-2">
                   <a href="#" class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs edit-registro" title="Editar">
                     <span class="hidden"><?php echo htmlspecialchars(json_encode($row)); ?></span>
                     ✏️
                   </a>
-                  <a href="#" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs delete-registro" title="Eliminar" data-cid="<?php echo $row['id_cliente']; ?>">
+                  <a href="#" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs delete-registro" title="Eliminar" data-cid="<?php echo $row['id']; ?>">
                     🗑
                   </a>
               </td>

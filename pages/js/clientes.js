@@ -22,16 +22,31 @@ function load(page) {
 }
 function abrirModal() {
 	$('#form_cliente').trigger("reset");
-	$("input[name='id_cliente']").val(0);
+	$("input[name='idcliente']").val(0);
 	document.getElementById('clienteModal').classList.remove('hidden');
+	document.getElementById('clienteModal').classList.add('flex');
 }
 function cerrarModal() {
 	document.getElementById('clienteModal').classList.add('hidden');
+	document.getElementById('clienteModal').classList.remove('flex');
 }
 function cerrarDelete() {
 	document.getElementById('deleteModal').classList.add('hidden');
 }
-
+function setUbicacion(data) {
+    $("#direccion").val(normalizarTexto(data.direccion || ''));
+    $("#codigo_ubigeo").val(normalizarTexto(data.codigo_ubigeo || ''));
+    $("#codigoUbigeoHidden").val(normalizarTexto(data.codigo_ubigeo || ''));
+    $("#pais").val(normalizarTexto(data.pais || 'PE'));
+    $("#paisHidden").val(normalizarTexto(data.pais || 'PE'));
+    $("#departamento").val(normalizarTexto(data.departamento || ''));
+    $("#departamentoHidden").val(normalizarTexto(data.departamento || ''));
+    $("#provincia").val(normalizarTexto(data.provincia || ''));
+    $("#provinciaHidden").val(normalizarTexto(data.provincia || ''));
+    $("#distrito").val(normalizarTexto(data.distrito || ''));
+    $("#distritoHidden").val(normalizarTexto(data.distrito || ''));
+    $("#ciudad").val(normalizarTexto(data.ciudad || ''));
+}
 function limpiarCampos() {
 	$("#nombres").val('');
 	$("#nombresHidden").val('');
@@ -218,7 +233,7 @@ $(document).ready(function () {
 	}
 	getTipoDocumento();
 
-	$(".btn-guardar").on("click", function () {
+	$(document.body).on("click", ".add-insert-update", function () {
 		if ($('#form_cliente').valid() == false) {
 			return;
 		}
@@ -239,17 +254,51 @@ $(document).ready(function () {
 			}
 		})
 	});
-	$(document.body).on("click", ".edit-registro", function () {
-		var cliente = $.parseJSON($.trim($(this).children("span").html()));
-		$("#id_cliente").val(cliente.id_cliente);
-		$("#id_tipo_doc").val(cliente.id_tipo_doc);
-		$("#numero_doc").val(cliente.numero_doc);
-		$("#nombre_razon_social").val(cliente.nombre_razon_social);
-		$("#direccion").val(cliente.direccion);
-		$("#correo").val(cliente.correo);
-		$("#telefono").val(cliente.telefono);
-		document.getElementById('clienteModal').classList.remove('hidden');
-	});
+	
+    $(document).on("click", ".edit-registro", function (e) {
+        e.preventDefault();
+debugger
+        const raw = $(this).attr("data-client") || $(this).children("span").html();
+        const cliente = JSON.parse($.trim(raw));
+
+        $("#idcliente").val(cliente.id || 0);
+        $("#tipoDocumento").val((cliente.tipo_documento || 'DNI').toUpperCase());
+        $("#tipoDocumento").trigger('change');
+        $("#numeroDocumento").val(cliente.numero_documento || '');
+        $("#nombres, #apellidoPaterno, #apellidoMaterno, #codigo_ubigeo, #pais, #departamento, #provincia, #distrito").prop('disabled', true);
+        setNombreCompleto(cliente.nombres || '');
+        $("#nombres").val(cliente.nombres || '');
+        $("#nombresHidden").val(cliente.nombres || '');
+        $("#apellidoPaterno").val(cliente.apellido_paterno || '');
+        $("#apellidoPaternoHidden").val(cliente.apellido_paterno || '');
+        $("#apellidoMaterno").val(cliente.apellido_materno || '');
+        $("#apellidoMaternoHidden").val(cliente.apellido_materno || '');
+        $("#razon_social").val(cliente.razon_social || '');
+        $("#razonSocialHidden").val(cliente.razon_social || '');
+        $("#nombre_comercial").val(cliente.nombre_comercial || '');
+        $("#nombreComercialHidden").val(cliente.nombre_comercial || '');
+        $("#condicion").val(cliente.condicion || '');
+        $("#condicionHidden").val(cliente.condicion || '');
+        $("#estado_ruc").val(cliente.estado_ruc || '');
+        $("#estadoRucHidden").val(cliente.estado_ruc || '');
+        $("#sexo").val(cliente.sexo || '');
+        $("#fechaNacimiento").val(cliente.fecha_nacimiento || '');
+        setUbicacion({
+            direccion: cliente.direccion,
+            codigo_ubigeo: cliente.codigo_ubigeo,
+            pais: cliente.pais,
+            departamento: cliente.departamento,
+            provincia: cliente.provincia,
+            distrito: cliente.distrito,
+            ciudad: cliente.ciudad
+        });
+        $("#telefono").val(cliente.telefono || '');
+        $("#email").val(cliente.email || '');
+        $("#estado_cliente").val(cliente.estado_cliente || 'ACTIVO');
+
+        $("#clientModalTitle").text("Editar cliente");
+        $("#clienteModal").removeClass("hidden").addClass("flex");
+    });
 
 	$(document.body).on('click', '.delete-registro', function () {
 		var cid = $(this).data('cid');

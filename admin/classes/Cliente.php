@@ -14,7 +14,9 @@ class Cliente
     public function getAllClientes()
     {
         $data = [];
-        $sql = "SELECT id_cliente, nombre_razon_social FROM cliente";
+        $sql = "SELECT id, tipo_documento, numero_documento, 
+                       COALESCE(razon_social, CONCAT(nombres, ' ', apellido_paterno, ' ', apellido_materno)) as nombre_razon_social 
+                FROM clientes WHERE estado_cliente = 'ACTIVO'";
         $q = $this->con->query($sql);
         if ($q && $q->num_rows > 0) {
             while ($row = $q->fetch_assoc()) {
@@ -23,55 +25,107 @@ class Cliente
         }
         return $data;
     }
+
     public function addRegistro(
-        $id_cliente,
-        $id_tipo_doc,
-        $numero_doc,
-        $nombre_razon_social,
+        $idcliente,
+        $tipo_documento,
+        $numero_documento,
+        $nombres,
+        $apellido_paterno,
+        $apellido_materno,
+        $sexo,
+        $fecha_nacimiento,
+        $razon_social,
+        $nombre_comercial,
+        $condicion,
+        $estado_ruc,
+        $codigo_ubigeo,
         $direccion,
-        $correo,
-        $telefono
+        $telefono,
+        $email,
+        $estado_cliente
     ) {
-
-        if ($id_cliente == 0) {
-            $q = $this->con->query("SELECT * FROM cliente WHERE numero_doc = '$numero_doc' and  id_tipo_doc = '$id_tipo_doc' LIMIT 1");
-            if ($q->num_rows > 0) {
-                return ['status' => 303, 'message' => 'ya existe un registro'];
+        if ($idcliente == 0) {
+            $check = $this->con->query("SELECT id FROM clientes WHERE tipo_documento = '$tipo_documento' AND numero_documento = '$numero_documento' LIMIT 1");
+            if ($check && $check->num_rows > 0) {
+                return ['status' => 303, 'message' => 'Ya existe un cliente con ese documento'];
             }
-
-
-
-            $stmt =  $this->con->prepare("INSERT INTO cliente 
-            (id_tipo_doc, numero_doc, nombre_razon_social, direccion, correo, telefono)
-            VALUES (?, ?, ?, ?, ?, ?)");
+            if ($fecha_nacimiento === '') {
+                $fecha_nacimiento = null;
+            }
+            $stmt = $this->con->prepare("INSERT INTO clientes 
+                (tipo_documento, numero_documento, nombres, apellido_paterno, apellido_materno, sexo, fecha_nacimiento, razon_social, nombre_comercial, condicion, estado, codigo_ubigeo, direccion, telefono, email, estado_cliente)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->bind_param(
-                "isssss",
-                $id_tipo_doc,
-                $numero_doc,
-                $nombre_razon_social,
+                "ssssssssssssssss",
+                $tipo_documento,
+                $numero_documento,
+                $nombres,
+                $apellido_paterno,
+                $apellido_materno,
+                $sexo,
+                $fecha_nacimiento,
+                $razon_social,
+                $nombre_comercial,
+                $condicion,
+                $estado_ruc,
+                $codigo_ubigeo,
                 $direccion,
-                $correo,
-                $telefono
+                $telefono,
+                $email,
+                $estado_cliente
             );
             if ($stmt->execute()) {
-
-                return ['status' => 202, 'message' => 'Se registró correctamente.'];
+                return ['status' => 202, 'message' => 'Cliente registrado correctamente.'];
             } else {
-                return ['status' => 303, 'message' => 'Error al registrar producto'];
+                return ['status' => 303, 'message' => 'Error al registrar cliente: ' . $stmt->error];
             }
         } else {
-            $q = $this->con->query("UPDATE cliente
-			 SET id_tipo_doc= '$id_tipo_doc',
-			 numero_doc= '$numero_doc',
-			 nombre_razon_social= '$nombre_razon_social',
-			 direccion= '$direccion',
-             correo= '$correo',
-             telefono= '$telefono'
-			 WHERE id_cliente = '$id_cliente'");
-            if ($q) {
-                return ['status' => 202, 'message' => 'Registro modificado correctamente'];
+            if ($fecha_nacimiento === '') {
+                $fecha_nacimiento = null;
+            }
+            $stmt = $this->con->prepare("UPDATE clientes SET 
+                tipo_documento = ?,
+                numero_documento = ?,
+                nombres = ?,
+                apellido_paterno = ?,
+                apellido_materno = ?,
+                sexo = ?,
+                fecha_nacimiento = ?,
+                razon_social = ?,
+                nombre_comercial = ?,
+                condicion = ?,
+                estado = ?,
+                codigo_ubigeo = ?,
+                direccion = ?,
+                telefono = ?,
+                email = ?,
+                estado_cliente = ?
+                WHERE id = ?");
+            $stmt->bind_param(
+                "ssssssssssssssssi",
+                $tipo_documento,
+                $numero_documento,
+                $nombres,
+                $apellido_paterno,
+                $apellido_materno,
+                $sexo,
+                $fecha_nacimiento,
+                $razon_social,
+                $nombre_comercial,
+                $condicion,
+                $estado_ruc,
+                $codigo_ubigeo,
+                $direccion,
+                $telefono,
+                $email,
+                $estado_cliente,
+                $idcliente
+            );
+            if ($stmt->execute()) {
+                return ['status' => 202, 'message' => 'Cliente modificado correctamente.'];
             } else {
-                return ['status' => 303, 'message' => 'No se ha podido modificar el registro'];
+                return ['status' => 303, 'message' => 'Error al modificar cliente: ' . $stmt->error];
             }
         }
     }
@@ -79,7 +133,7 @@ class Cliente
     public function deleteRegistro($cid = null)
     {
         if ($cid != null) {
-            $q = $this->con->query("DELETE FROM cliente WHERE id_cliente = '$cid'") or die($this->con->error);
+            $q = $this->con->query("DELETE FROM clientes WHERE id = '$cid'") or die($this->con->error);
             if ($q) {
                 return ['status' => 202, 'message' => 'El registro se eliminó correctamente'];
             } else {
@@ -99,23 +153,25 @@ if (isset($_POST['eliminar_registro'])) {
     }
 }
 
-
 if (isset($_POST['add_update'])) {
-    $id_cliente = $_POST['id_cliente'];
-    $id_tipo_doc = $_POST['id_tipo_doc'];
-    $numero_doc = $_POST['numero_doc'];
-    $nombre_razon_social = $_POST['nombre_razon_social'];
-    $direccion = $_POST['direccion'];
-    $correo = $_POST['correo'];
-    $telefono = $_POST['telefono'];
     $p = new Cliente();
     echo json_encode($p->addRegistro(
-        $id_cliente,
-        $id_tipo_doc,
-        $numero_doc,
-        $nombre_razon_social,
-        $direccion,
-        $correo,
-        $telefono
+        $_POST['idcliente'] ?? 0,
+        $_POST['tipo_documento'] ?? '',
+        $_POST['numero_documento'] ?? '',
+        $_POST['nombres'] ?? '',
+        $_POST['apellido_paterno'] ?? '',
+        $_POST['apellido_materno'] ?? '',
+        $_POST['sexo'] ?? '',
+        $_POST['fecha_nacimiento'] ?? null,
+        $_POST['razon_social'] ?? '',
+        $_POST['nombre_comercial'] ?? '',
+        $_POST['condicion'] ?? '',
+        $_POST['estado_ruc'] ?? '',
+        $_POST['codigo_ubigeo'] ?? '',
+        $_POST['direccion'] ?? '',
+        $_POST['telefono'] ?? '',
+        $_POST['email'] ?? '',
+        $_POST['estado_cliente'] ?? 'ACTIVO'
     ));
 }
