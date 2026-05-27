@@ -25,7 +25,7 @@
 </main>
 
 <!-- Modal Registro -->
-<div id="clienteModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
+<!-- <div id="clienteModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
         <div class="flex justify-between items-center border-b px-6 py-3">
             <h4 class="text-lg font-semibold text-gray-800">Registro de Cliente</h4>
@@ -37,11 +37,14 @@
                 <input type="hidden" name="add_update" value="1">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Tipo Documento <span class="text-red-500">*</span></label>
-                    <select name="id_tipo_doc" id="id_tipo_doc" required class="mt-1 w-full border border-gray-300 rounded px-3 py-2 tipoDocumento_list"></select>
+                     <select name="tipo_documento" id="tipoDocumento" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <option value="DNI">DNI</option>
+                        <option value="RUC">RUC</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Número Documento <span class="text-red-500">*</span></label>
-                    <input type="text" name="numero_doc" id="numero_doc" required class="mt-1 w-full border border-gray-300 rounded px-3 py-2">
+                    <input type="text" name="numero_documento" id="numero_documento" required class="mt-1 w-full border border-gray-300 rounded px-3 py-2">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Razón Social <span class="text-red-500">*</span></label>
@@ -66,7 +69,137 @@
             <button type="button" class="btn-guardar bg-teal-500 hover:bg-teal-600 text-white px-5 py-2 rounded shadow">Guardar</button>
         </div>
     </div>
+</div> -->
+<div id="clienteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 px-4 py-8">
+    <div class="w-full max-w-4xl rounded-2xl bg-white shadow-2xl">
+        <div class="flex items-center justify-between border-b px-6 py-4">
+            <div>
+                <h4 id="clientModalTitle" class="text-lg font-semibold text-gray-800">Registro de cliente</h4>
+                <p class="text-sm text-gray-500">Completa los datos para guardar o actualizar el registro</p>
+            </div>
+            <button type="button" class="text-3xl font-bold leading-none text-gray-500 hover:text-red-500" onclick="cerrarModal()">&times;</button>
+        </div>
+
+        <div class="max-h-[72vh] overflow-y-auto p-6">
+            <form id="form_cliente" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <input type="hidden" name="add_update" value="1">
+                <input type="hidden" name="idcliente" id="idcliente" value="0">
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Tipo de documento</label>
+                    <select name="tipo_documento" id="tipoDocumento" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <option value="DNI">DNI</option>
+                        <option value="RUC">RUC</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Número de documento</label>
+                    <input type="text" name="numero_documento" id="numeroDocumento" placeholder="Ingresa DNI o RUC" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                </div>
+
+                <div id="dniFields" class="grid grid-cols-1 gap-4 md:col-span-2 md:grid-cols-3">
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Nombres</label>
+                        <input type="text" id="nombres" disabled class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <input type="hidden" name="nombres" id="nombresHidden">
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Apellido paterno</label>
+                        <input type="text" id="apellidoPaterno" disabled class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <input type="hidden" name="apellido_paterno" id="apellidoPaternoHidden">
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Apellido materno</label>
+                        <input type="text" id="apellidoMaterno" disabled class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <input type="hidden" name="apellido_materno" id="apellidoMaternoHidden">
+                    </div>
+                </div>
+
+                <div id="dniExtraFields" class="grid grid-cols-1 gap-4 md:col-span-2 md:grid-cols-2">
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Sexo</label>
+                        <select name="sexo" id="sexo" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Fecha de nacimiento</label>
+                        <input type="date" name="fecha_nacimiento" id="fechaNacimiento" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    </div>
+                </div>
+
+                <div id="rucFields" class="hidden space-y-4 md:col-span-2">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Razón social</label>
+                            <input type="text" id="razon_social" disabled placeholder="FACTURALAYA S.R.L." class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <input type="hidden" name="razon_social" id="razonSocialHidden">
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Nombre comercial</label>
+                            <input type="text" id="nombre_comercial" disabled class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <input type="hidden" name="nombre_comercial" id="nombreComercialHidden">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Condición</label>
+                            <input type="text" id="condicion" disabled placeholder="HABIDO" class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <input type="hidden" name="condicion" id="condicionHidden">
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Estado RUC</label>
+                            <input type="text" id="estado_ruc" disabled placeholder="ACTIVO" class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <input type="hidden" name="estado_ruc" id="estadoRucHidden">
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Código UBIGEO</label>
+                            <input type="text" id="codigo_ubigeo" disabled placeholder="060101" class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <input type="hidden" name="codigo_ubigeo" id="codigoUbigeoHidden">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Dirección</label>
+                        <textarea name="direccion" id="direccion" rows="3" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300"></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Teléfono</label>
+                    <input type="text" name="telefono" id="telefono" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" id="email" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Estado</label>
+                    <select name="estado_cliente" id="estado_cliente" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <option value="ACTIVO">ACTIVO</option>
+                        <option value="INACTIVO">INACTIVO</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 border-t bg-gray-50 px-6 py-4">
+            <button type="button" onclick="cerrarModal()" class="inline-flex items-center gap-2 rounded-lg bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300">
+                <i class="fa fa-times"></i> Cerrar
+            </button>
+            <button type="button" class="add-insert-update inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                <i class="fa fa-save"></i> Guardar
+            </button>
+        </div>
+    </div>
 </div>
+
 
 <!-- Modal Eliminar -->
 <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
