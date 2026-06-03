@@ -132,11 +132,17 @@ if (!empty($_SESSION['carrito'])) {
                 <!-- MENU -->
                 <nav class="space-y-1 mt-6">
 
-                    <a href="presentacion.php"
+                    <a href="dashboard.php"
+                        class="flex items-center gap-3 p-3 rounded-lg
+                    <?= $pagina == 'dashboard.php' ? $active : $normal ?>">
+                        <i class="fa fa-chart-pie"></i> Dashboard
+                    </a>
+
+                   <!--  <a href="presentacion.php"
                         class="flex items-center gap-3 p-3 rounded-lg
                     <?= $pagina == 'presentacion.php' ? $active : $normal ?>">
                         <i class="fa fa-home"></i> Inicio
-                    </a>
+                    </a> -->
 
                     <?php if ($logueado && $rol == 1): ?>
 
