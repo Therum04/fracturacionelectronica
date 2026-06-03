@@ -48,7 +48,7 @@ if ($action == 'ajax') {
               <td class="px-4 py-2"><?php echo $i++; ?></td>
               <td class="px-4 py-2"><?php echo $row['tipo_documento']; ?></td>
               <td class="px-4 py-2"><?php echo $row['numero_documento']; ?></td>
-              <td class="px-4 py-2"><?php echo $row['razon_social'] ? $row['razon_social'] : $row['nombres'] . ' ' . $row['apellido_paterno'] . ' ' . $row['apellido_materno']; ?></td>
+              <td class="px-4 py-2"><?php echo htmlspecialchars($row['razon_social'] ?: trim(implode(' ', array_filter([$row['nombres'], $row['apellido_paterno'], $row['apellido_materno']])))); ?></td>
               <td class="px-4 py-2"><?php echo $row['email']; ?></td>
               <td class="px-4 py-2"><?php echo $row['telefono']; ?></td>
               <td class="px-4 py-2 text-center flex justify-center gap-2">

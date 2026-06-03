@@ -98,75 +98,14 @@
                     <input type="text" name="numero_documento" id="numeroDocumento" placeholder="Ingresa DNI o RUC" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
                 </div>
 
-                <div id="dniFields" class="grid grid-cols-1 gap-4 md:col-span-2 md:grid-cols-3">
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Nombres</label>
-                        <input type="text" id="nombres" disabled class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                        <input type="hidden" name="nombres" id="nombresHidden">
-                    </div>
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Apellido paterno</label>
-                        <input type="text" id="apellidoPaterno" disabled class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                        <input type="hidden" name="apellido_paterno" id="apellidoPaternoHidden">
-                    </div>
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Apellido materno</label>
-                        <input type="text" id="apellidoMaterno" disabled class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                        <input type="hidden" name="apellido_materno" id="apellidoMaternoHidden">
-                    </div>
+                <div class="md:col-span-2">
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Nombre / Razón Social</label>
+                    <input type="text" name="nombres" id="nombre" placeholder="Nombre o razón social" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
                 </div>
 
-                <div id="dniExtraFields" class="grid grid-cols-1 gap-4 md:col-span-2 md:grid-cols-2">
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Sexo</label>
-                        <select name="sexo" id="sexo" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                            <option value="">-- Seleccionar --</option>
-                            <option value="M">Masculino</option>
-                            <option value="F">Femenino</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Fecha de nacimiento</label>
-                        <input type="date" name="fecha_nacimiento" id="fechaNacimiento" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                    </div>
-                </div>
-
-                <div id="rucFields" class="hidden space-y-4 md:col-span-2">
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Razón social</label>
-                            <input type="text" id="razon_social" disabled placeholder="FACTURALAYA S.R.L." class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                            <input type="hidden" name="razon_social" id="razonSocialHidden">
-                        </div>
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Nombre comercial</label>
-                            <input type="text" id="nombre_comercial" disabled class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                            <input type="hidden" name="nombre_comercial" id="nombreComercialHidden">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Condición</label>
-                            <input type="text" id="condicion" disabled placeholder="HABIDO" class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                            <input type="hidden" name="condicion" id="condicionHidden">
-                        </div>
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Estado RUC</label>
-                            <input type="text" id="estado_ruc" disabled placeholder="ACTIVO" class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                            <input type="hidden" name="estado_ruc" id="estadoRucHidden">
-                        </div>
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Código UBIGEO</label>
-                            <input type="text" id="codigo_ubigeo" disabled placeholder="060101" class="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                            <input type="hidden" name="codigo_ubigeo" id="codigoUbigeoHidden">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Dirección</label>
-                        <textarea name="direccion" id="direccion" rows="3" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300"></textarea>
-                    </div>
+                <div class="md:col-span-2">
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Dirección</label>
+                    <textarea name="direccion" id="direccion" rows="2" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300"></textarea>
                 </div>
 
                 <div>

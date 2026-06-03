@@ -15,7 +15,7 @@ class Cliente
     {
         $data = [];
         $sql = "SELECT id, tipo_documento, numero_documento, 
-                       CONCAT(tipo_documento, ': ', numero_documento, ' - ', COALESCE(razon_social, CONCAT(nombres, ' ', apellido_paterno, ' ', apellido_materno))) as nombre_razon_social 
+                       CONCAT(tipo_documento, ': ', numero_documento, ' - ', COALESCE(NULLIF(razon_social, ''), TRIM(CONCAT_WS(' ', nombres, apellido_paterno, apellido_materno)))) as nombre_razon_social 
                 FROM clientes WHERE estado_cliente = 'ACTIVO'";
         $q = $this->con->query($sql);
         if ($q && $q->num_rows > 0) {

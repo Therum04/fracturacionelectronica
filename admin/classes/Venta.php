@@ -23,7 +23,7 @@ class Venta
                 OR c.numero_documento LIKE '%$s%'";
         }
         $sql = "SELECT v.*,
-                COALESCE(c.razon_social, CONCAT(c.nombres, ' ', c.apellido_paterno, ' ', c.apellido_materno)) AS cliente_nombre,
+                COALESCE(NULLIF(c.razon_social, ''), TRIM(CONCAT_WS(' ', c.nombres, c.apellido_paterno, c.apellido_materno))) AS cliente_nombre,
                 c.numero_documento AS cliente_doc
                 FROM ventas v
                 LEFT JOIN clientes c ON v.id_cliente = c.id
@@ -41,7 +41,7 @@ class Venta
     public function getById($id)
     {
         $sql = "SELECT v.*,
-                COALESCE(c.razon_social, CONCAT(c.nombres, ' ', c.apellido_paterno, ' ', c.apellido_materno)) AS cliente_nombre,
+                COALESCE(NULLIF(c.razon_social, ''), TRIM(CONCAT_WS(' ', c.nombres, c.apellido_paterno, c.apellido_materno))) AS cliente_nombre,
                 c.numero_documento AS cliente_doc,
                 c.tipo_documento AS cliente_tipo_doc,
                 c.direccion AS cliente_direccion,

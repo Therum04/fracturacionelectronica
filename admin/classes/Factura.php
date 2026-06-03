@@ -15,15 +15,15 @@ class Factura
 	{
 		$data = [];
 		$sql = "SELECT fc.*, 
-				c.nombre_razon_social as cliente_nombre,
-				c.numero_doc as cliente_doc,
+				COALESCE(NULLIF(c.razon_social, ''), TRIM(CONCAT_WS(' ', c.nombres, c.apellido_paterno, c.apellido_materno))) as cliente_nombre,
+				c.numero_documento as cliente_doc,
 				tc.nombre as tipo_comprobante_nombre,
 				m.nombre as moneda_nombre,
 				tm.nombre as metodo_pago_nombre,
 				te.nombre as estado_nombre,
 				e.nombre_razon_social as empresa_nombre
 				FROM factura_cabecera fc
-				LEFT JOIN cliente c ON fc.id_cliente = c.id_cliente
+				LEFT JOIN clientes c ON fc.id_cliente = c.id
 				LEFT JOIN tipo_comprobante tc ON fc.id_tipo_comp = tc.id_tipo_comp
 				LEFT JOIN moneda m ON fc.id_moneda = m.id_moneda
 				LEFT JOIN tipo_metodo_pago tm ON fc.id_metodo_pago = tm.id_metodo_pago
@@ -42,9 +42,9 @@ class Factura
 	public function getFacturaById($id)
 	{
 		$sql = "SELECT fc.*, 
-				c.nombre_razon_social as cliente_nombre,
-				c.numero_doc as cliente_doc,
-				c.id_tipo_doc,
+				COALESCE(NULLIF(c.razon_social, ''), TRIM(CONCAT_WS(' ', c.nombres, c.apellido_paterno, c.apellido_materno))) as cliente_nombre,
+				c.numero_documento as cliente_doc,
+				c.tipo_documento as id_tipo_doc,
 				c.direccion as cliente_direccion,
 				tc.nombre as tipo_comprobante_nombre,
 				m.nombre as moneda_nombre,
@@ -54,7 +54,7 @@ class Factura
 				e.nombre_razon_social as empresa_nombre,
 				e.ruc as empresa_ruc
 				FROM factura_cabecera fc
-				LEFT JOIN cliente c ON fc.id_cliente = c.id_cliente
+				LEFT JOIN clientes c ON fc.id_cliente = c.id
 				LEFT JOIN tipo_comprobante tc ON fc.id_tipo_comp = tc.id_tipo_comp
 				LEFT JOIN moneda m ON fc.id_moneda = m.id_moneda
 				LEFT JOIN tipo_metodo_pago tm ON fc.id_metodo_pago = tm.id_metodo_pago

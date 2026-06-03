@@ -10,7 +10,7 @@ if ($action == 'ajax') {
     $tables = "ventas v
     left join clientes c on v.id_cliente = c.id";
     $campos = " v.*,
-                COALESCE(c.razon_social, CONCAT(c.nombres, ' ', c.apellido_paterno, ' ', c.apellido_materno)) as cliente_nombre,
+                COALESCE(NULLIF(c.razon_social, ''), TRIM(CONCAT_WS(' ', c.nombres, c.apellido_paterno, c.apellido_materno))) as cliente_nombre,
                 c.numero_documento as cliente_doc ";
     $sWhere = " (v.serie LIKE '%" . $query . "%' OR v.correlativo LIKE '%" . $query . "%'
                 OR c.razon_social LIKE '%" . $query . "%' OR c.nombres LIKE '%" . $query . "%'

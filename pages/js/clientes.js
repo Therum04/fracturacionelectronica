@@ -48,35 +48,9 @@ function setUbicacion(data) {
     $("#ciudad").val(normalizarTexto(data.ciudad || ''));
 }
 function limpiarCampos() {
-	$("#nombres").val('');
-	$("#nombresHidden").val('');
-	$("#apellidoPaterno").val('');
-	$("#apellidoPaternoHidden").val('');
-	$("#apellidoMaterno").val('');
-	$("#apellidoMaternoHidden").val('');
-	$("#razon_social").val('');
-	$("#razonSocialHidden").val('');
-	$("#nombre_comercial").val('');
-	$("#nombreComercialHidden").val('');
-	$("#condicion").val('');
-	$("#condicionHidden").val('');
-	$("#estado_ruc").val('');
-	$("#estadoRucHidden").val('');
+	$("#nombre").val('');
 	$("#direccion").val('');
-	$("#codigo_ubigeo").val('');
-	$("#codigoUbigeoHidden").val('');
-	$("#pais").val('PE');
-	$("#paisHidden").val('PE');
-	$("#departamento").val('');
-	$("#departamentoHidden").val('');
-	$("#provincia").val('');
-	$("#provinciaHidden").val('');
-	$("#distrito").val('');
-	$("#distritoHidden").val('');
-	$("#ciudad").val('');
 	$("#telefono").val('');
-	$("#sexo").val('');
-	$("#fechaNacimiento").val('');
 }
 
 function normalizarTexto(valor) {
@@ -151,36 +125,11 @@ function aplicarRespuestaDni(data) {
 	var apPaterno = normalizarTexto(data.ap_paterno);
 	var apMaterno = normalizarTexto(data.ap_materno);
 	var nombreCompleto = [nombres, apPaterno, apMaterno].filter(Boolean).join(' ');
-	setNombreCompleto(nombreCompleto);
-	$("#nombres").val(nombres);
-	$("#nombresHidden").val(nombres);
-	$("#apellidoPaterno").val(apPaterno);
-	$("#apellidoPaternoHidden").val(apPaterno);
-	$("#apellidoMaterno").val(apMaterno);
-	$("#apellidoMaternoHidden").val(apMaterno);
-}
-function setNombreCompleto(nombre) {
-	$("#nombres").val(nombre || '');
-	$("#nombresHidden").val(nombre || '');
+	$("#nombre").val(nombreCompleto);
 }
 function aplicarRespuestaRuc(data) {
-	var razonSocial = normalizarTexto(data.razon_social);
-	$("#razon_social").val(razonSocial);
-	$("#razonSocialHidden").val(razonSocial);
-	$("#nombre_comercial").val(normalizarTexto(data.nombre_comercial));
-	$("#nombreComercialHidden").val(normalizarTexto(data.nombre_comercial));
-	$("#condicion").val(normalizarTexto(data.condicion));
-	$("#condicionHidden").val(normalizarTexto(data.condicion));
-	$("#estado_ruc").val(normalizarTexto(data.estado));
-	$("#estadoRucHidden").val(normalizarTexto(data.estado));
-	setUbicacion({
-		direccion: data.direccion,
-		codigo_ubigeo: data.codigo_ubigeo,
-		departamento: data.departamento,
-		provincia: data.provincia,
-		distrito: data.distrito,
-		ciudad: data.ciudad
-	});
+	$("#nombre").val(normalizarTexto(data.razon_social));
+	$("#direccion").val(normalizarTexto(data.direccion));
 	$("#telefono").val(normalizarTexto(data.telefono));
 }
 $(document).ready(function () {
@@ -205,13 +154,7 @@ $(document).ready(function () {
 
 	$("#tipoDocumento").on("change", function () {
 		const tipo = $(this).val().toUpperCase();
-		if (tipo === 'RUC') {
-			$("#dniFields, #dniExtraFields").addClass('hidden');
-			$("#rucFields").removeClass('hidden');
-		} else {
-			$("#dniFields, #dniExtraFields").removeClass('hidden');
-			$("#rucFields").addClass('hidden');
-		}
+		$("#nombre").attr("placeholder", tipo === 'RUC' ? 'Razón social' : 'Nombre completo');
 	});
 
 	function getTipoDocumento() {
@@ -265,33 +208,12 @@ $(document).ready(function () {
         $("#tipoDocumento").val((cliente.tipo_documento || 'DNI').toUpperCase());
         $("#tipoDocumento").trigger('change');
         $("#numeroDocumento").val(cliente.numero_documento || '');
-        $("#nombres, #apellidoPaterno, #apellidoMaterno, #codigo_ubigeo, #pais, #departamento, #provincia, #distrito").prop('disabled', true);
-        setNombreCompleto(cliente.nombres || '');
-        $("#nombres").val(cliente.nombres || '');
-        $("#nombresHidden").val(cliente.nombres || '');
-        $("#apellidoPaterno").val(cliente.apellido_paterno || '');
-        $("#apellidoPaternoHidden").val(cliente.apellido_paterno || '');
-        $("#apellidoMaterno").val(cliente.apellido_materno || '');
-        $("#apellidoMaternoHidden").val(cliente.apellido_materno || '');
-        $("#razon_social").val(cliente.razon_social || '');
-        $("#razonSocialHidden").val(cliente.razon_social || '');
-        $("#nombre_comercial").val(cliente.nombre_comercial || '');
-        $("#nombreComercialHidden").val(cliente.nombre_comercial || '');
-        $("#condicion").val(cliente.condicion || '');
-        $("#condicionHidden").val(cliente.condicion || '');
-        $("#estado_ruc").val(cliente.estado_ruc || '');
-        $("#estadoRucHidden").val(cliente.estado_ruc || '');
-        $("#sexo").val(cliente.sexo || '');
-        $("#fechaNacimiento").val(cliente.fecha_nacimiento || '');
-        setUbicacion({
-            direccion: cliente.direccion,
-            codigo_ubigeo: cliente.codigo_ubigeo,
-            pais: cliente.pais,
-            departamento: cliente.departamento,
-            provincia: cliente.provincia,
-            distrito: cliente.distrito,
-            ciudad: cliente.ciudad
-        });
+        var nombre = cliente.razon_social || cliente.nombres || '';
+        if (cliente.apellido_paterno && !cliente.razon_social) {
+            nombre = [cliente.nombres, cliente.apellido_paterno, cliente.apellido_materno].filter(Boolean).join(' ');
+        }
+        $("#nombre").val(nombre);
+        $("#direccion").val(cliente.direccion || '');
         $("#telefono").val(cliente.telefono || '');
         $("#email").val(cliente.email || '');
         $("#estado_cliente").val(cliente.estado_cliente || 'ACTIVO');
