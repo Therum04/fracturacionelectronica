@@ -7,12 +7,10 @@ $action = (isset($_REQUEST['action']) && $_REQUEST['action'] != NULL) ? $_REQUES
 if ($action == 'ajax') {
     $query = mysqli_real_escape_string($con, trim(strip_tags($_REQUEST['query'])));
 
-    $tables = "productos p
-        LEFT JOIN categorias c ON p.id_categoria = c.id
-        LEFT JOIN proveedores pr ON p.id_proveedor = pr.id";
-    $campos = " p.*, c.nombre as categoria_nombre, pr.empresa as proveedor_empresa ";
-    $sWhere = " (p.nombre LIKE '%" . $query . "%' OR p.codigo LIKE '%" . $query . "%' OR c.nombre LIKE '%" . $query . "%')";
-    $sWhere .= " ORDER BY p.id DESC";
+    $tables = "categorias c";
+    $campos = " c.* ";
+    $sWhere = " (c.nombre LIKE '%" . $query . "%')";
+    $sWhere .= " ORDER BY c.id DESC";
     include 'pagination.php';
     $page = (isset($_REQUEST['page']) && !empty($_REQUEST['page'])) ? $_REQUEST['page'] : 1;
     $per_page = intval($_REQUEST['per_page']);
@@ -36,13 +34,8 @@ if ($action == 'ajax') {
                 <thead class="bg-[rgb(20,184,166)] text-white text-sm">
                     <tr>
                         <th class="px-4 py-2 text-left font-semibold uppercase">N°</th>
-                        <th class="px-4 py-2 text-left font-semibold uppercase">Imagen</th>
-                        <th class="px-4 py-2 text-left font-semibold uppercase">Código</th>
                         <th class="px-4 py-2 text-left font-semibold uppercase">Nombre</th>
-                        <th class="px-4 py-2 text-left font-semibold uppercase">Categoría</th>
-                        <th class="px-4 py-2 text-left font-semibold uppercase">Proveedor</th>
-                        <th class="px-4 py-2 text-left font-semibold uppercase">Precio Venta</th>
-                        <th class="px-4 py-2 text-left font-semibold uppercase">Stock</th>
+                        <th class="px-4 py-2 text-left font-semibold uppercase">Descripción</th>
                         <th class="px-4 py-2 text-left font-semibold uppercase">Estado</th>
                         <th class="px-4 py-2 text-center font-semibold uppercase">Acción</th>
                     </tr>
@@ -52,32 +45,16 @@ if ($action == 'ajax') {
                     $finales = 0;
                     while ($row = mysqli_fetch_array($query)) {
                         $id = $row['id'];
-                        $codigo = $row['codigo'];
                         $nombre = $row['nombre'];
-                        $categoria_nombre = $row['categoria_nombre'];
-                        $proveedor_empresa = $row['proveedor_empresa'];
-                        $precio_venta = $row['precio_venta'];
-                        $stock_actual = $row['stock_actual'];
+                        $descripcion = $row['descripcion'];
                         $estado = $row['estado'];
-                        $imagen = $row['imagen'];
 
                         $finales++;
                     ?>
                         <tr>
                             <td class="px-4 py-2"><?php echo $finales; ?></td>
-                            <td class="px-4 py-2">
-                                <?php if ($imagen): ?>
-                                    <img src="../uploads/productos/<?php echo $imagen; ?>" alt="img" class="w-10 h-10 object-cover rounded">
-                                <?php else: ?>
-                                    <span class="text-gray-400">-</span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="px-4 py-2"><?php echo $codigo; ?></td>
                             <td class="px-4 py-2"><?php echo $nombre; ?></td>
-                            <td class="px-4 py-2"><?php echo $categoria_nombre; ?></td>
-                            <td class="px-4 py-2"><?php echo $proveedor_empresa; ?></td>
-                            <td class="px-4 py-2">S/ <?php echo number_format($precio_venta, 2); ?></td>
-                            <td class="px-4 py-2"><?php echo $stock_actual; ?></td>
+                            <td class="px-4 py-2"><?php echo $descripcion; ?></td>
                             <td class="px-4 py-2">
                                 <span class="px-2 py-1 text-xs font-semibold rounded <?php echo $estado == 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
                                     <?php echo $estado; ?>
@@ -95,7 +72,7 @@ if ($action == 'ajax') {
                         </tr>
                     <?php } ?>
                     <tr class="bg-gray-50 text-sm text-gray-600">
-                        <td colspan="10" class="px-4 py-3">
+                        <td colspan="5" class="px-4 py-3">
                             <?php
                             $inicios = $offset + 1;
                             $finales += $inicios - 1;

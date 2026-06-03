@@ -1,125 +1,131 @@
 <?php
 
-
 class Producto
 {
+    private $con;
 
-	private $con;
+    function __construct()
+    {
+        include_once("Database.php");
+        $db = new Database();
+        $this->con = $db->connect();
+    }
 
-	function __construct()
-	{
-		include_once("Database.php");
-		$db = new Database();
-		$this->con = $db->connect();
-	}
+    private function uploadImage($file, $current = null)
+    {
+        if ($file && $file['error'] === UPLOAD_ERR_OK) {
+            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = uniqid('prod_') . '.' . $ext;
+            $dest = __DIR__ . '/../../uploads/productos/' . $filename;
+            if (move_uploaded_file($file['tmp_name'], $dest)) {
+                if ($current && file_exists(__DIR__ . '/../../uploads/productos/' . $current)) {
+                    unlink(__DIR__ . '/../../uploads/productos/' . $current);
+                }
+                return $filename;
+            }
+        }
+        return $current;
+    }
 
-	public function addRegistro($id_producto, $descripcion, $id_unidad, $precio_unitario, $id_impuesto)
-	{
+    public function addRegistro($id, $codigo, $nombre, $descripcion, $id_categoria, $id_proveedor, $precio_venta, $costo_compra, $stock_actual, $stock_minimo, $codigo_barras, $imagen_file, $imagen_actual, $estado)
+    {
+        $imagen = $this->uploadImage($imagen_file, $imagen_actual);
 
-		if ($id_producto == 0) {
-			$q = $this->con->query("SELECT * FROM producto_servicio WHERE descripcion = '$descripcion' and  id_unidad = '$id_unidad' LIMIT 1");
-			if ($q->num_rows > 0) {
-				return ['status' => 303, 'message' => 'ya existe un registro'];
-			}
-			
-			$res_code = $this->con->query("SELECT count(id_producto) as last_id FROM producto_servicio");
-			$row_code = $res_code->fetch_assoc();
-			$next_id = ($row_code['last_id']) ? $row_code['last_id'] + 1 : 1;
+        if ($id == 0) {
+            $stmt = $this->con->prepare("INSERT INTO productos 
+                (codigo, nombre, descripcion, id_categoria, id_proveedor, precio_venta, costo_compra, stock_actual, stock_minimo, codigo_barras, imagen, estado)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param(
+                "sssiiddiisss",
+                $codigo, $nombre, $descripcion, $id_categoria, $id_proveedor, $precio_venta, $costo_compra, $stock_actual, $stock_minimo, $codigo_barras, $imagen, $estado
+            );
+            if ($stmt->execute()) {
+                return ['status' => 202, 'message' => 'Producto registrado correctamente.'];
+            } else {
+                return ['status' => 303, 'message' => 'Error al registrar producto.'];
+            }
+        } else {
+            $q = $this->con->query("UPDATE productos SET
+                codigo = '$codigo',
+                nombre = '$nombre',
+                descripcion = '$descripcion',
+                id_categoria = '$id_categoria',
+                id_proveedor = '$id_proveedor',
+                precio_venta = '$precio_venta',
+                costo_compra = '$costo_compra',
+                stock_actual = '$stock_actual',
+                stock_minimo = '$stock_minimo',
+                codigo_barras = '$codigo_barras',
+                imagen = " . ($imagen ? "'$imagen'" : "imagen") . ",
+                estado = '$estado'
+                WHERE id = '$id'");
+            if ($q) {
+                return ['status' => 202, 'message' => 'Producto modificado correctamente.'];
+            } else {
+                return ['status' => 303, 'message' => 'No se pudo modificar el producto.'];
+            }
+        }
+    }
 
-			// Formato: M0001
-			$codigo_barra = "PROD" . str_pad($next_id, 3, "0", STR_PAD_LEFT);
+    public function deleteRegistro($cid = null)
+    {
+        if ($cid != null) {
+            $res = $this->con->query("SELECT imagen FROM productos WHERE id = '$cid'");
+            if ($row = $res->fetch_assoc()) {
+                if ($row['imagen'] && file_exists(__DIR__ . '/../../uploads/productos/' . $row['imagen'])) {
+                    unlink(__DIR__ . '/../../uploads/productos/' . $row['imagen']);
+                }
+            }
+            $q = $this->con->query("DELETE FROM productos WHERE id = '$cid'") or die($this->con->error);
+            if ($q) {
+                return ['status' => 202, 'message' => 'Registro eliminado correctamente.'];
+            } else {
+                return ['status' => 202, 'message' => 'No se ha podido eliminar el registro.'];
+            }
+        } else {
+            return ['status' => 303, 'message' => 'ID inválido.'];
+        }
+    }
 
-			$stmt =  $this->con->prepare("INSERT INTO producto_servicio 
-            (codigo_producto, descripcion, id_unidad, precio_unitario, id_impuesto, activo)
-            VALUES (?, ?, ?, ?, ?, 1)");
-			$stmt->bind_param(
-				"ssidi",
-				$codigo_barra,
-				$descripcion,
-				$id_unidad,
-				$precio_unitario,
-				$id_impuesto
-			);
-			if ($stmt->execute()) {
-
-				return ['status' => 202, 'message' => 'Se registró correctamente.'];
-			} else {
-				return ['status' => 303, 'message' => 'Error al registrar producto'];
-			}
-		} else {
-
-			$q = $this->con->query("UPDATE producto_servicio
-			 SET descripcion= '$descripcion',
-			 id_unidad= '$id_unidad',
-			 precio_unitario= '$precio_unitario',
-			 id_impuesto= '$id_impuesto'
-			 WHERE id_producto = '$id_producto'");
-			if ($q) {
-				return ['status' => 202, 'message' => 'Registro modificado correctamente'];
-			} else {
-				return ['status' => 303, 'message' => 'No se podido modificar el registro'];
-			}
-		}
-	}
-
-	public function getAllProductos()
-	{
-		$data = [];
-		$sql = "SELECT p.*, i.porcentaje as impuesto_porcentaje 
-                FROM producto_servicio p 
-                LEFT JOIN tipo_impuesto i ON p.id_impuesto = i.id_impuesto 
-                ";
-		$q = $this->con->query($sql);
-		if ($q && $q->num_rows > 0) {
-			while ($row = $q->fetch_assoc()) {
-				$data[] = $row;
-			}
-		}
-		return $data;
-	}
-
-
-	public function deleteRegistro($cid = null)
-	{
-		if ($cid != null) {
-			
-			$q = $this->con->query("DELETE FROM producto_servicio WHERE id_producto = '$cid'")  or die($this->con->error);
-			if ($q) {
-				return ['status' => 202, 'message' => 'El registro se elimino correctamente'];
-			} else {
-				return ['status' => 202, 'message' => 'No se ha podido eliminar el registro'];
-			}
-		} else {
-			return ['status' => 303, 'message' => 'ID de area inválido'];
-		}
-	}
-
-	
-
+    public function getAllProductos()
+    {
+        $data = [];
+        $q = $this->con->query("SELECT p.*, c.nombre as categoria_nombre, pr.empresa as proveedor_empresa
+            FROM productos p
+            LEFT JOIN categorias c ON p.id_categoria = c.id
+            LEFT JOIN proveedores pr ON p.id_proveedor = pr.id
+            ORDER BY p.id DESC");
+        if ($q && $q->num_rows > 0) {
+            while ($row = $q->fetch_assoc()) {
+                $data[] = $row;
+            }
+        }
+        return $data;
+    }
 }
 
 if (isset($_POST['add_update'])) {
-	$id_producto = $_POST['id_producto'];
-	$descripcion = $_POST['descripcion'];
-	$id_unidad = $_POST['id_unidad'];
-	$precio_unitario = $_POST['precio_unitario'];
-	$id_impuesto = $_POST['id_impuesto'];
-	
+    $id = $_POST['id'];
+    $codigo = $_POST['codigo'];
+    $nombre = $_POST['nombre'];
+    $descripcion = $_POST['descripcion'];
+    $id_categoria = $_POST['id_categoria'];
+    $id_proveedor = $_POST['id_proveedor'];
+    $precio_venta = $_POST['precio_venta'];
+    $costo_compra = $_POST['costo_compra'];
+    $stock_actual = $_POST['stock_actual'];
+    $stock_minimo = $_POST['stock_minimo'];
+    $codigo_barras = $_POST['codigo_barras'];
+    $imagen_file = isset($_FILES['imagen']) ? $_FILES['imagen'] : null;
+    $imagen_actual = $_POST['imagen_actual'] ?? '';
+    $estado = $_POST['estado'];
 
-	$p = new Producto();
-	echo json_encode($p->addRegistro($id_producto, $descripcion, $id_unidad, $precio_unitario, $id_impuesto));
+    $p = new Producto();
+    echo json_encode($p->addRegistro($id, $codigo, $nombre, $descripcion, $id_categoria, $id_proveedor, $precio_venta, $costo_compra, $stock_actual, $stock_minimo, $codigo_barras, $imagen_file, $imagen_actual, $estado));
 }
-
-
 
 if (isset($_POST['eliminar_registro'])) {
-	if (!empty($_POST['cid'])) {
-		$p = new Producto();
-		echo json_encode($p->deleteRegistro($_POST['cid']));
-		exit();
-	} else {
-		echo json_encode(['status' => 303, 'message' => 'ID de usuario inválido']);
-		exit();
-	}
+    $cid = $_POST['cid'];
+    $p = new Producto();
+    echo json_encode($p->deleteRegistro($cid));
 }
-

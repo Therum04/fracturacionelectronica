@@ -42,6 +42,42 @@ if (!empty($_SESSION['carrito'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="./js/jquery.validate.min.js"></script>
     <script src="./js/toastr.min.js"></script>
+    <script>
+        function toggleSubmenu(btn) {
+            var submenu = btn.nextElementSibling;
+            var chevron = btn.querySelector('.fa-chevron-down');
+            while (submenu && !submenu.classList.contains('submenu')) {
+                submenu = submenu.nextElementSibling;
+            }
+            if (submenu) {
+                submenu.classList.toggle('hidden');
+                if (chevron) chevron.classList.toggle('rotated');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.submenu').forEach(function (el) {
+                var links = el.querySelectorAll('a');
+                var shouldOpen = false;
+                links.forEach(function (link) {
+                    var page = window.location.pathname.split('/').pop();
+                    if (link.getAttribute('href') === page) {
+                        shouldOpen = true;
+                    }
+                });
+                if (shouldOpen) {
+                    el.classList.remove('hidden');
+                    var btn = el.previousElementSibling;
+                    while (btn && btn.tagName !== 'BUTTON') {
+                        btn = btn.previousElementSibling;
+                    }
+                    if (btn) {
+                        var chevron = btn.querySelector('.fa-chevron-down');
+                        if (chevron) chevron.classList.add('rotated');
+                    }
+                }
+            });
+        });
+    </script>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -53,6 +89,16 @@ if (!empty($_SESSION['carrito'])) {
             margin-top: 0.25rem;
             font-size: 80%;
             color: #dc3545;
+        }
+        .submenu {
+            overflow: hidden;
+            transition: max-height 0.25s ease;
+        }
+        .submenu.open {
+            max-height: 300px;
+        }
+        .chevron.rotated {
+            transform: rotate(180deg);
         }
     </style>
 </head>
@@ -84,58 +130,106 @@ if (!empty($_SESSION['carrito'])) {
                 </div>
 
                 <!-- MENU -->
-                <nav class="space-y-3 mt-6">
+                <nav class="space-y-1 mt-6">
+
                     <a href="presentacion.php"
                         class="flex items-center gap-3 p-3 rounded-lg
                     <?= $pagina == 'presentacion.php' ? $active : $normal ?>">
-                        🏠 Inicio
+                        <i class="fa fa-home"></i> Inicio
                     </a>
+
                     <?php if ($logueado && $rol == 1): ?>
-                        <a href="empresa.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
+
+                        <button onclick="toggleSubmenu(this)" class="w-full flex items-center justify-between gap-3 p-3 rounded-lg text-xs font-semibold uppercase tracking-wider text-gray-400 hover:text-gray-600 hover:bg-gray-50">
+                            <span><i class="fa fa-cogs mr-2"></i> Configuración</span>
+                            <i class="fa fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div class="submenu hidden space-y-1">
+                           <!--  <a href="empresa.php"
+                                class="flex items-center gap-3 p-3 ml-4 rounded-lg
                     <?= $pagina == 'empresa.php' ? $active : $normal ?>">
-                            <i class="fa fa-tags"></i> Empresa
-                        </a>
+                                <i class="fa fa-building"></i> Empresa
+                            </a> -->
+                            <a href="emisor.php"
+                                class="flex items-center gap-3 p-3 ml-4 rounded-lg
+                    <?= $pagina == 'emisor.php' ? $active : $normal ?>">
+                                <i class="fa fa-file-invoice"></i> Emisor
+                            </a>
+                        </div>
 
-                        <a href="producto.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
+                        <button onclick="toggleSubmenu(this)" class="w-full flex items-center justify-between gap-3 p-3 rounded-lg text-xs font-semibold uppercase tracking-wider text-gray-400 hover:text-gray-600 hover:bg-gray-50">
+                            <span><i class="fa fa-boxes mr-2"></i> Inventario</span>
+                            <i class="fa fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div class="submenu hidden space-y-1">
+                            <a href="categoria.php"
+                                class="flex items-center gap-3 p-3 ml-4 rounded-lg
+                    <?= $pagina == 'categoria.php' ? $active : $normal ?>">
+                                <i class="fa fa-list"></i> Categorías
+                            </a>
+                            <a href="producto.php"
+                                class="flex items-center gap-3 p-3 ml-4 rounded-lg
                     <?= $pagina == 'producto.php' ? $active : $normal ?>">
-                            <i class="fa fa-tags"></i> Productos
-                        </a>
+                                <i class="fa fa-box"></i> Productos
+                            </a>
+                            <a href="proveedor.php"
+                                class="flex items-center gap-3 p-3 ml-4 rounded-lg
+                    <?= $pagina == 'proveedor.php' ? $active : $normal ?>">
+                                <i class="fa fa-truck"></i> Proveedores
+                            </a>
+                        </div>
 
-
-                        <a href="usuario.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
+                        <button onclick="toggleSubmenu(this)" class="w-full flex items-center justify-between gap-3 p-3 rounded-lg text-xs font-semibold uppercase tracking-wider text-gray-400 hover:text-gray-600 hover:bg-gray-50">
+                            <span><i class="fa fa-users mr-2"></i> Personas</span>
+                            <i class="fa fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div class="submenu hidden space-y-1">
+                            <a href="usuario.php"
+                                class="flex items-center gap-3 p-3 ml-4 rounded-lg
                     <?= $pagina == 'usuario.php' ? $active : $normal ?>">
-                            👤 Usuarios
-                        </a>
-                        <a href="clientes.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
+                                <i class="fa fa-user-gear"></i> Usuarios
+                            </a>
+                            <a href="clientes.php"
+                                class="flex items-center gap-3 p-3 ml-4 rounded-lg
                     <?= $pagina == 'clientes.php' ? $active : $normal ?>">
-                            👤 Clientes
-                        </a>
+                                <i class="fa fa-user"></i> Clientes
+                            </a>
+                        </div>
+
                     <?php endif; ?>
 
                     <?php if ($logueado): ?>
-                        <a href="ventas.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
+
+                        <button onclick="toggleSubmenu(this)" class="w-full flex items-center justify-between gap-3 p-3 rounded-lg text-xs font-semibold uppercase tracking-wider text-gray-400 hover:text-gray-600 hover:bg-gray-50">
+                            <span><i class="fa fa-file-invoice-dollar mr-2"></i> Facturación</span>
+                            <i class="fa fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div class="submenu hidden space-y-1">
+                            <a href="ventas.php"
+                                class="flex items-center gap-3 p-3 ml-4 rounded-lg
                     <?= $pagina == 'ventas.php' ? $active : $normal ?>">
-                            <i class="fa fa-file-invoice"></i> Ventas
-                        </a>
-                        <a href="factura.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
+                                <i class="fa fa-receipt"></i> Ventas
+                            </a>
+                            <a href="factura.php"
+                                class="flex items-center gap-3 p-3 ml-4 rounded-lg
                     <?= $pagina == 'factura.php' ? $active : $normal ?>">
-                            <i class="fa fa-plus-circle"></i> Nueva Factura
-                        </a>
+                                <i class="fa fa-plus-circle"></i> Nueva Factura
+                            </a>
+                        </div>
 
-                        <a href="perfil.php"
-                            class="flex items-center gap-3 p-3 rounded-lg
+                        <button onclick="toggleSubmenu(this)" class="w-full flex items-center justify-between gap-3 p-3 rounded-lg text-xs font-semibold uppercase tracking-wider text-gray-400 hover:text-gray-600 hover:bg-gray-50">
+                            <span><i class="fa fa-id-card mr-2"></i> Cuenta</span>
+                            <i class="fa fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div class="submenu hidden space-y-1">
+                            <a href="perfil.php"
+                                class="flex items-center gap-3 p-3 ml-4 rounded-lg
                     <?= $pagina == 'perfil.php' ? $active : $normal ?>">
-                            👤 Perfil
-                        </a>
+                                <i class="fa fa-user-gear"></i> Perfil
+                            </a>
+                        </div>
+
                     <?php endif; ?>
-
-
 
                 </nav>
             </div>
