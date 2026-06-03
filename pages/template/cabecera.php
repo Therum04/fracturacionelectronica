@@ -210,10 +210,10 @@ if (!empty($_SESSION['carrito'])) {
                     <?= $pagina == 'ventas.php' ? $active : $normal ?>">
                                 <i class="fa fa-receipt"></i> Ventas
                             </a>
-                            <a href="factura.php"
+                            <a href="venta_nueva.php"
                                 class="flex items-center gap-3 p-3 ml-4 rounded-lg
-                    <?= $pagina == 'factura.php' ? $active : $normal ?>">
-                                <i class="fa fa-plus-circle"></i> Nueva Factura
+                    <?= $pagina == 'venta_nueva.php' ? $active : $normal ?>">
+                                <i class="fa fa-plus-circle"></i> Nueva Venta
                             </a>
                         </div>
 

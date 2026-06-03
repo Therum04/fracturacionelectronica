@@ -1,4 +1,3 @@
-
 function load(page) {
 	var query = $("#q").val();
 	var per_page = 10;
@@ -17,84 +16,106 @@ function load(page) {
 		}
 	});
 }
+
 function abrirView(id) {
 	$.ajax({
-		url: '../admin/classes/Factura.php',
+		url: '../admin/classes/Venta.php',
 		method: 'POST',
-		data: { get_factura_by_id: 1, id_factura: id },
+		data: { get_venta_by_id: 1, id_venta: id },
 		success: function (response) {
 			var resp = $.parseJSON(response);
 			if (resp) {
 				var html = '<div class="border-b pb-4 mb-4">';
 				html += '<div class="grid grid-cols-2 md:grid-cols-3 gap-4">';
-				html += '<div><span class="text-sm font-medium text-gray-500">Serie:</span><p class="text-gray-800">' + resp.serie + '-' + resp.numero_factura + '</p></div>';
-				html += '<div><span class="text-sm font-medium text-gray-500">Fecha:</span><p class="text-gray-800">' + resp.fecha_emision + ' ' + resp.hora_emision + '</p></div>';
-				html += '<div><span class="text-sm font-medium text-gray-500">Tipo:</span><p class="text-gray-800">' + (resp.tipo_comprobante_nombre || '') + '</p></div>';
-				html += '<div><span class="text-sm font-medium text-gray-500">Cliente:</span><p class="text-gray-800">' + (resp.cliente_nombre || '') + '</p></div>';
-				html += '<div><span class="text-sm font-medium text-gray-500">Doc. Cliente:</span><p class="text-gray-800">' + (resp.cliente_doc || '') + '</p></div>';
-				html += '<div><span class="text-sm font-medium text-gray-500">Moneda:</span><p class="text-gray-800">' + (resp.moneda_nombre || '') + '</p></div>';
-				html += '<div><span class="text-sm font-medium text-gray-500">Método Pago:</span><p class="text-gray-800">' + (resp.metodo_pago_nombre || '') + '</p></div>';
-				html += '<div><span class="text-sm font-medium text-gray-500">Estado:</span><p class="text-gray-800">' + (resp.estado_nombre || '') + '</p></div>';
-				html += '<div><span class="text-sm font-medium text-gray-500">Empresa:</span><p class="text-gray-800">' + (resp.empresa_nombre || '') + '</p></div>';
+				html += '<div><span class="text-sm font-medium text-gray-500">Comprobante:</span><p class="text-gray-800">' + resp.serie + '-' + String(resp.correlativo).padStart(6, '0') + '</p></div>';
+				html += '<div><span class="text-sm font-medium text-gray-500">Tipo:</span><p class="text-gray-800">' + resp.tipo_comprobante + '</p></div>';
+				html += '<div><span class="text-sm font-medium text-gray-500">Fecha:</span><p class="text-gray-800">' + resp.fecha_emision + '</p></div>';
+				html += '<div><span class="text-sm font-medium text-gray-500">Cliente:</span><p class="text-gray-800">' + (resp.cliente_nombre || '-') + '</p></div>';
+				html += '<div><span class="text-sm font-medium text-gray-500">Doc. Cliente:</span><p class="text-gray-800">' + (resp.cliente_doc || '-') + '</p></div>';
+				html += '<div><span class="text-sm font-medium text-gray-500">Método Pago:</span><p class="text-gray-800">' + (resp.metodo_pago || '-') + '</p></div>';
+				html += '<div><span class="text-sm font-medium text-gray-500">Estado:</span><p class="text-gray-800">' + resp.estado + '</p></div>';
+
+				var sunatLabel = 'PENDIENTE';
+				var sunatColor = 'text-yellow-600';
+				if (resp.sunat_estado == 'aceptado') { sunatLabel = 'ACEPTADO'; sunatColor = 'text-green-600'; }
+				else if (resp.sunat_estado == 'rechazado') { sunatLabel = 'RECHAZADO'; sunatColor = 'text-red-600'; }
+				else if (resp.sunat_estado == 'baja') { sunatLabel = 'BAJA'; sunatColor = 'text-orange-600'; }
+
+				html += '<div><span class="text-sm font-medium text-gray-500">SUNAT:</span><p class="font-semibold ' + sunatColor + '">' + sunatLabel + '</p></div>';
+				if (resp.sunat_ticket) html += '<div><span class="text-sm font-medium text-gray-500">Ticket:</span><p class="text-gray-800">' + resp.sunat_ticket + '</p></div>';
+				if (resp.sunat_mensaje) html += '<div class="col-span-3"><span class="text-sm font-medium text-gray-500">Mensaje:</span><p class="text-gray-800 text-sm">' + resp.sunat_mensaje + '</p></div>';
 				html += '</div>';
-				if (resp.observacion) html += '<div class="mt-2"><span class="text-sm font-medium text-gray-500">Observación:</span><p class="text-gray-800">' + resp.observacion + '</p></div>';
+				if (resp.descripcion_motivo) html += '<div class="mt-2"><span class="text-sm font-medium text-gray-500">Motivo Anulación:</span><p class="text-gray-800">' + resp.descripcion_motivo + '</p></div>';
 				html += '</div>';
 
 				html += '<h5 class="font-semibold text-gray-700 mb-2">Detalle de Productos</h5>';
 				html += '<table class="min-w-full divide-y divide-gray-200 text-sm">';
 				html += '<thead class="bg-gray-50"><tr>';
 				html += '<th class="px-4 py-2 text-left">Producto</th>';
+				html += '<th class="px-4 py-2 text-left">Código</th>';
+				html += '<th class="px-4 py-2 text-center">Und</th>';
 				html += '<th class="px-4 py-2 text-right">Cantidad</th>';
 				html += '<th class="px-4 py-2 text-right">P. Unitario</th>';
-				html += '<th class="px-4 py-2 text-right">V. Venta</th>';
-				html += '<th class="px-4 py-2 text-right">Impuesto</th>';
-				html += '<th class="px-4 py-2 text-right">Total</th>';
+				html += '<th class="px-4 py-2 text-right">Subtotal</th>';
 				html += '</tr></thead><tbody>';
 				if (resp.detalle) {
 					$.each(resp.detalle, function (i, d) {
 						html += '<tr class="border-t">';
-						html += '<td class="px-4 py-2">' + (d.producto_nombre || '') + '</td>';
-						html += '<td class="px-4 py-2 text-right">' + parseFloat(d.cantidad).toFixed(3) + '</td>';
+						html += '<td class="px-4 py-2">' + (d.producto_nombre || '-') + '</td>';
+						html += '<td class="px-4 py-2">' + (d.codigo_producto || '-') + '</td>';
+						html += '<td class="px-4 py-2 text-center">' + (d.unidad_medida || 'NIU') + '</td>';
+						html += '<td class="px-4 py-2 text-right">' + parseInt(d.cantidad) + '</td>';
 						html += '<td class="px-4 py-2 text-right">' + parseFloat(d.precio_unitario).toFixed(2) + '</td>';
-						html += '<td class="px-4 py-2 text-right">' + parseFloat(d.valor_venta).toFixed(2) + '</td>';
-						html += '<td class="px-4 py-2 text-right">' + parseFloat(d.valor_impuesto).toFixed(2) + '</td>';
-						html += '<td class="px-4 py-2 text-right font-semibold">' + parseFloat(d.total_linea).toFixed(2) + '</td>';
+						html += '<td class="px-4 py-2 text-right font-semibold">' + parseFloat(d.subtotal).toFixed(2) + '</td>';
 						html += '</tr>';
 					});
 				}
 				html += '</tbody></table>';
 
 				html += '<div class="flex justify-end mt-4 space-x-6 text-sm">';
-				html += '<div><span class="text-gray-500">Subtotal:</span> <span class="font-semibold">' + parseFloat(resp.subtotal).toFixed(2) + '</span></div>';
-				html += '<div><span class="text-gray-500">Impuestos:</span> <span class="font-semibold">' + parseFloat(resp.total_impuestos).toFixed(2) + '</span></div>';
-				html += '<div><span class="text-gray-500">Total:</span> <span class="font-bold text-teal-600">' + parseFloat(resp.total).toFixed(2) + '</span></div>';
+				html += '<div><span class="text-gray-500">Subtotal:</span> <span class="font-semibold">S/ ' + parseFloat(resp.subtotal).toFixed(2) + '</span></div>';
+				html += '<div><span class="text-gray-500">IGV:</span> <span class="font-semibold">S/ ' + parseFloat(resp.igv).toFixed(2) + '</span></div>';
+				html += '<div><span class="text-gray-500">Total:</span> <span class="font-bold text-teal-600">S/ ' + parseFloat(resp.total).toFixed(2) + '</span></div>';
 				html += '</div>';
 
 				$("#viewContent").html(html);
+				currentViewId = id;
 				document.getElementById('viewModal').classList.remove('hidden');
 			}
 		}
 	});
 }
+
+var currentViewId = null;
+
 function cerrarView() {
 	document.getElementById('viewModal').classList.add('hidden');
+	currentViewId = null;
 }
+
+function imprimirVenta() {
+	if (currentViewId) {
+		window.open('print_venta.php?id=' + currentViewId + '&formato=ticket', '_blank', 'width=400,height=600');
+	}
+}
+
 function cerrarDelete() {
 	document.getElementById('deleteModal').classList.add('hidden');
 }
+
 $(document).ready(function () {
 	load();
 
 	$(document.body).on('click', '.delete-registro', function () {
-		var cid = $(this).data('cid');
-		$("input[name='cid']").val(cid);
+		var id = $(this).data('id');
+		$("input[name='id']").val(id);
 		document.getElementById('deleteModal').classList.remove('hidden');
 	});
 
 	$("#delete_form").on('submit', function (e) {
 		e.preventDefault();
 		$.ajax({
-			url: '../admin/classes/Factura.php',
+			url: '../admin/classes/Venta.php',
 			method: 'POST',
 			data: $("#delete_form").serialize(),
 			success: function (response) {
